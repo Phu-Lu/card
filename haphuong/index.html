@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOS – Bé đi lạc cần giúp đỡ</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #FF2D2D;
+    --red-glow: rgba(255,45,45,0.35);
+    --white: #FFFFFF;
+    --bg: #0a0a0a;
+    --card: #161616;
+    --text-muted: #888;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 48px;
+    overflow-x: hidden;
+  }
+
+  /* HERO */
+  .hero {
+    width: 100%;
+    background: var(--red);
+    padding: 32px 20px 26px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg, transparent, transparent 10px,
+      rgba(0,0,0,0.06) 10px, rgba(0,0,0,0.06) 20px
+    );
+  }
+  .pulse-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .pulse-wrap::before, .pulse-wrap::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.45);
+    animation: pulse 2s ease-out infinite;
+  }
+  .pulse-wrap::after { animation-delay: 0.8s; }
+  @keyframes pulse {
+    0%   { width: 56px; height: 56px; opacity: 0.9; }
+    100% { width: 140px; height: 140px; opacity: 0; }
+  }
+  .sos-icon {
+    font-size: 54px;
+    position: relative;
+    z-index: 1;
+    animation: bob 1.5s ease-in-out infinite;
+    filter: drop-shadow(0 3px 10px rgba(0,0,0,0.4));
+  }
+  @keyframes bob {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-7px); }
+  }
+  .hero h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 24px;
+    color: white;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  }
+  .hero p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.88);
+    margin-top: 7px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* CONTENT */
+  .content {
+    width: 100%;
+    max-width: 430px;
+    padding: 22px 18px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* STATUS CARD */
+  .card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 18px;
+    border: 1px solid #1f1f1f;
+  }
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 6px 0;
+  }
+  .status-row + .status-row {
+    border-top: 1px solid #222;
+    margin-top: 10px;
+    padding-top: 14px;
+  }
+  .ico-box {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .ico-box.red    { background: rgba(255,45,45,0.15); }
+  .ico-box.green  { background: rgba(0,200,100,0.15); }
+  .ico-box.yellow { background: rgba(255,214,0,0.15); }
+
+  .s-label { font-size: 11px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; }
+  .s-val   { font-size: 15px; color: white; font-weight: 700; margin-top: 3px; word-break: break-all; }
+  .s-val.dim { font-size: 12px; color: #999; font-weight: 400; }
+  .s-val a { color: #FF6666; text-decoration: none; }
+
+  /* CTA BUTTON */
+  .btn-call {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: var(--red);
+    color: white;
+    font-family: 'Space Mono', monospace;
+    font-size: 17px; font-weight: 700;
+    border: none; border-radius: 18px;
+    padding: 20px; width: 100%;
+    cursor: pointer; text-decoration: none;
+    box-shadow: 0 4px 28px var(--red-glow);
+    transition: transform 0.12s, box-shadow 0.12s;
+    letter-spacing: 0.4px;
+  }
+  .btn-call:active { transform: scale(0.97); box-shadow: 0 2px 12px var(--red-glow); }
+  .btn-call .bi { font-size: 22px; }
+
+  /* INFO CARD */
+  .info-title {
+    font-size: 11px; color: var(--text-muted);
+    font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 14px;
+  }
+  .info-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 13px; }
+  .info-row:last-child { margin-bottom: 0; }
+  .ie { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .it { font-size: 14px; color: #bbb; line-height: 1.55; }
+  .it strong { color: white; }
+
+  /* FOOTER */
+  .footer { margin-top: 6px; text-align: center; font-size: 12px; color: #3a3a3a; padding: 0 16px; }
+  .footer span { color: var(--red); }
+
+  /* Spinner */
+  .spin {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white; border-radius: 50%;
+    animation: spinning 0.7s linear infinite;
+    vertical-align: middle; margin-right: 4px;
+  }
+  @keyframes spinning { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="pulse-wrap">
+    <div class="sos-icon">🆘</div>
+  </div>
+  <h1>BÉ CẦN GIÚP ĐỠ</h1>
+  <h1>I AM LOST - PLEASE HELP!</h1>
+  <p>Bé đang bị lạc — xin mọi người hãy giúp một tay! 🙏</p>
+  <p>I am lost and need help finding my family! 🙏</p>
+</div>
+
+<div class="content">
+
+  <!-- Location status -->
+  <div class="card" id="locCard">
+    <div class="status-row">
+      <div class="ico-box red">📍</div>
+      <div>
+        <div class="s-label">Vị trí của bạn / Your location</div>
+        <div class="s-val" id="locText"><span class="spin"></span> Đang xác định…</div>
+        <div class="s-val dim" id="locCoords"></div>
+      </div>
+    </div>
+    <div class="status-row" id="sentRow" style="display:none">
+      <div class="ico-box green">✅</div>
+      <div>
+        <div class="s-label">Thông báo / Location sent</div>
+        <div class="s-val" id="sentText">Đã gửi về ba/mẹ!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call button -->
+  <a class="btn-call" id="callBtn" href="tel:0988667487">
+    <span class="bi">📞</span> GỌI CHO BA MẸ NGAY / CALL PARENTS
+  </a>
+
+  <!-- Instructions -->
+  <div class="card">
+    <div class="info-title">Xin hãy giúp bé / Please help 🙏</div>
+    <div class="info-row">
+      <div class="ie">👶</div>
+      <div class="it">
+        Bé đang <strong>bị lạc</strong> và cần người lớn giúp để về với gia đình.<br>
+        <span style="color:#888;font-size:13px;">I am <strong style="color:#ccc;">lost</strong> and need help finding my family.</span>
+      </div>
+    </div>
+    <div class="info-row">
+      <div class="ie">📲</div>
+      <div class="it">
+        Vị trí của bạn đã được <strong>gửi tự động về ba/mẹ bé</strong> ngay khi quét thẻ này.<br>
+        <span style="color:#888;font-size:13px;">My parents have been automatically <strong style="color:#ccc;">notified of your location.</strong></span>
+      </div>
+    </div>
+    <div class="info-row">
+      <div class="ie">🚓</div>
+      <div class="it">
+        Có thể đưa bé đến <strong>bảo vệ</strong> gần nhất hoặc gọi <strong>113</strong>.<br>
+        <span style="color:#888;font-size:13px;">Please take me to the nearest <strong style="color:#ccc;">security guard</strong> or call <strong style="color:#ccc;">Police</strong>.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Hệ thống bảo vệ trẻ em · Vị trí tự động qua <span>Telegram</span>
+  </div>
+</div>
+
+<script>
+  // ╔══════════════════════════════════╗
+  // ║  ĐIỀN THÔNG TIN CỦA MÀY VÀO ĐÂY ║
+  // ╚══════════════════════════════════╝
+  const BOT_TOKEN  = "8601022327:AAFKOzVR2mM2B010Z-FLUEPSLxwV0rnxgJ4";
+  const CHAT_ID    = "7784332377";
+  const CHILD_NAME = "Hà Phương";
+  const PARENT_TEL = "0988667487";
+  // ════════════════════════════════════
+
+  document.getElementById('callBtn').href = `tel:${PARENT_TEL}`;
+
+  const locText  = document.getElementById('locText');
+  const locCoords= document.getElementById('locCoords');
+  const sentRow  = document.getElementById('sentRow');
+  const sentText = document.getElementById('sentText');
+
+  const vn_time = () =>
+    new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+
+  async function tgMessage(text) {
+    try {
+      const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: 'Markdown' })
+      });
+      return r.ok;
+    } catch { return false; }
+  }
+
+  async function tgLocation(lat, lon) {
+    try {
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendLocation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: CHAT_ID, latitude: lat, longitude: lon })
+      });
+    } catch {}
+  }
+
+  async function onGPS(pos) {
+    const { latitude: lat, longitude: lon, accuracy } = pos.coords;
+    const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+
+    locText.innerHTML = `<a href="${mapsUrl}" target="_blank">Xem trên Google Maps 🗺️</a>`;
+    locCoords.textContent = `${lat.toFixed(5)}, ${lon.toFixed(5)} (~${Math.round(accuracy)}m)`;
+
+    const msg =
+      `🆘 *SOS — ${CHILD_NAME} đang bị lạc!*\n\n` +
+      `📍 *Vị trí người tìm thấy bé:*\n${mapsUrl}\n\n` +
+      `🎯 Độ chính xác: ~${Math.round(accuracy)}m\n` +
+      `🕐 Lúc: ${vn_time()}\n\n` +
+      `_Ai đó đã quét thẻ NFC của bé — vị trí tự động báo về._`;
+
+    const ok = await tgMessage(msg);
+    await tgLocation(lat, lon);
+
+    sentRow.style.display = 'flex';
+    sentText.textContent = ok ? `Ba/Mẹ đã được thông báo! 🎉` : `Đã gửi (kiểm tra mạng)`;
+  }
+
+  async function onGPSError() {
+    locText.innerHTML = `<span class="spin"></span> Đang dùng IP fallback…`;
+    locCoords.textContent = '';
+
+    try {
+      const r = await fetch('https://ip-api.com/json/?fields=status,city,regionName,country,lat,lon,isp');
+      const d = await r.json();
+
+      if (d.status === 'success') {
+        const mapsUrl = `https://www.google.com/maps?q=${d.lat},${d.lon}`;
+        locText.innerHTML = `<a href="${mapsUrl}" target="_blank">Xem trên Google Maps 🗺️</a>`;
+        locCoords.textContent = `📶 IP location: ${d.city}, ${d.regionName} (~khu vực)`;
+
+        const msg =
+          `🆘 *SOS — ${CHILD_NAME} đang bị lạc!*\n\n` +
+          `📶 *Vị trí ước lượng qua IP* (không cho phép GPS):\n` +
+          `🏙️ ${d.city}, ${d.regionName}, ${d.country}\n` +
+          `🗺️ ${mapsUrl}\n\n` +
+          `⚠️ Độ chính xác thấp (~quận/huyện)\n` +
+          `🕐 Lúc: ${vn_time()}\n\n` +
+          `_Người tìm thấy bé từ chối GPS — dùng IP làm fallback._`;
+
+        await tgMessage(msg);
+      } else {
+        throw new Error('ip-api failed');
+      }
+    } catch {
+      locText.textContent = '⚠️ Không xác định được vị trí';
+      locCoords.textContent = 'GPS bị từ chối, IP lookup thất bại';
+
+      tgMessage(
+        `🆘 *SOS — ${CHILD_NAME} đang bị lạc!*\n\n` +
+        `❌ Ai đó quét thẻ NFC nhưng *từ chối GPS và IP lookup thất bại*.\n` +
+        `🕐 Lúc: ${vn_time()}\n\n` +
+        `_Không có thông tin vị trí._`
+      );
+    }
+
+    sentRow.style.display = 'flex';
+    sentText.textContent = 'Đã báo ba/mẹ (vị trí ước lượng)';
+  }
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(onGPS, onGPSError, {
+      enableHighAccuracy: true,
+      timeout: 12000,
+      maximumAge: 0
+    });
+  } else {
+    onGPSError();
+  }
+</script>
+</body>
+</html>
