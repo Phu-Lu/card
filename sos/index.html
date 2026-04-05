@@ -272,7 +272,7 @@
 
   async function tgMessage(text) {
   try {
-    for (const id of CHAT_IDs) {
+    for (const id of CHAT_ID) {
       await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -285,7 +285,7 @@
 
   async function tgLocation(lat, lon) {
   try {
-    for (const id of CHAT_IDs) {
+    for (const id of CHAT_ID) {
       await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendLocation`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
