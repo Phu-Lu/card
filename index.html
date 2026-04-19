@@ -4,444 +4,314 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Zebra Digital Card</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --zebra:   #1a1a1a;
-  --accent:  #e31837;
-  --accent2: #ff6b35;
-  --text:    #0f0f0f;
-  --muted:   #6b7280;
-  --border:  rgba(255,255,255,0.18);
-  --glass:   rgba(255,255,255,0.72);
-  --glass2:  rgba(255,255,255,0.45);
-  --shadow:  0 32px 80px rgba(0,0,0,0.22), 0 8px 24px rgba(0,0,0,0.12);
+  --zebra:  #1a1a1a;
+  --accent: #e31837;
+  --text:   #0f0f0f;
+  --muted:  #6b7280;
+  --font:   Tahoma, 'Segoe UI', Geneva, Verdana, sans-serif;
 }
 
-html, body {
-  height: 100%;
-  overflow-x: hidden;
-}
+html { height: 100%; }
 
 body {
-  font-family: 'DM Sans', sans-serif;
-  background: #0a0a0f;
+  font-family: var(--font);
+  background: #08080e;
   min-height: 100vh;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 36px 16px 60px;
+  padding: 60px 16px 80px;
   position: relative;
+  overflow-x: hidden;
 }
 
-/* ===== 3D CANVAS BG ===== */
 #bg-canvas {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  display: block;
 }
 
-/* ===== CARD WRAPPER WITH TILT ===== */
 .scene {
   width: 100%;
-  max-width: 420px;
-  perspective: 1200px;
+  max-width: 400px;
+  perspective: 1000px;
   position: relative;
   z-index: 10;
+  margin-top: 20px;
 }
 
 .card {
   width: 100%;
-  background: var(--glass);
-  backdrop-filter: blur(28px) saturate(1.6);
-  -webkit-backdrop-filter: blur(28px) saturate(1.6);
-  border-radius: 24px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
+  background: rgba(255,255,255,0.76);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.35), 0 4px 16px rgba(0,0,0,0.2);
   overflow: hidden;
   opacity: 0;
-  transform: translateY(32px) rotateX(4deg);
-  animation: cardRise 0.8s cubic-bezier(0.22,1,0.36,1) 0.2s forwards;
-  transform-style: preserve-3d;
-  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+  transform: translateY(40px);
+  animation: cardRise 0.7s cubic-bezier(0.22,1,0.36,1) 0.15s forwards;
+  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
   will-change: transform;
 }
 
-@keyframes cardRise {
-  to { opacity: 1; transform: translateY(0) rotateX(0deg); }
-}
+@keyframes cardRise { to { opacity:1; transform:translateY(0); } }
 
-/* Gloss shimmer on card */
-.card::before {
+.card::after {
   content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg,
-    rgba(255,255,255,0.55) 0%,
-    rgba(255,255,255,0.0) 50%,
-    rgba(255,255,255,0.08) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-  border-radius: 24px;
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 55%);
+  pointer-events: none; z-index: 1; border-radius: 22px;
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .card-header {
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(12px);
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  background: rgba(255,255,255,0.7);
+  padding: 13px 18px;
+  display: flex; align-items: center; justify-content: space-between;
   border-bottom: 1px solid rgba(0,0,0,0.06);
-  position: relative;
-  z-index: 2;
+  position: relative; z-index: 2;
 }
-
-.zebra-logo-img { height: 26px; display: block; }
-
+.zebra-logo-img { height: 25px; display: block; }
 .zebra-logo-fallback {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
-  letter-spacing: 3px;
-  color: var(--zebra);
+  font-family: var(--font); font-size: 18px; font-weight: 700;
+  letter-spacing: 4px; color: var(--zebra); display: none;
 }
-
 .nfc-badge {
   display: flex; align-items: center; gap: 5px;
-  background: rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.09);
-  border-radius: 20px;
-  padding: 4px 11px;
-  font-size: 9px; letter-spacing: 2px;
-  color: #444;
-  font-weight: 600; text-transform: uppercase;
-  font-family: 'DM Mono', monospace;
+  background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.09);
+  border-radius: 20px; padding: 4px 10px;
+  font-size: 9px; letter-spacing: 2px; color: #555;
+  font-weight: 700; text-transform: uppercase; font-family: var(--font);
 }
 .nfc-dot {
-  width: 6px; height: 6px;
-  background: var(--accent); border-radius: 50%;
-  animation: blink 2s infinite;
-  box-shadow: 0 0 6px var(--accent);
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 5px var(--accent); animation: blink 2s infinite;
 }
-@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.15;} }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
 
-/* ===== HERO BANNER ===== */
+/* HERO */
 .card-hero {
-  position: relative;
-  height: 110px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 40%, #e31837 100%);
-  overflow: hidden;
-  z-index: 2;
+  position: relative; height: 90px;
+  background: linear-gradient(130deg, #111 0%, #222 45%, #c0102a 100%);
+  overflow: hidden; z-index: 2;
 }
-
 .card-hero-grid {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-  background-size: 28px 28px;
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
-
 .card-hero-glow {
-  position: absolute;
-  width: 220px; height: 220px;
-  background: radial-gradient(circle, rgba(227,24,55,0.5) 0%, transparent 70%);
-  right: -40px; top: -80px;
-  animation: glowPulse 4s ease-in-out infinite alternate;
+  position: absolute; width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(227,24,55,0.55) 0%, transparent 65%);
+  right: -30px; top: -80px;
+  animation: gPulse 3.5s ease-in-out infinite alternate;
 }
-
-@keyframes glowPulse {
-  from { transform: scale(1); opacity: 0.7; }
-  to   { transform: scale(1.2); opacity: 1; }
-}
-
+@keyframes gPulse { from{transform:scale(1);opacity:.7} to{transform:scale(1.25);opacity:1} }
 .card-hero-label {
-  position: absolute;
-  bottom: 14px; left: 20px;
-  font-family: 'DM Mono', monospace;
-  font-size: 9px; letter-spacing: 3px;
-  color: rgba(255,255,255,0.35);
-  text-transform: uppercase;
+  position: absolute; bottom: 12px; left: 18px;
+  font-size: 8px; letter-spacing: 3px;
+  color: rgba(255,255,255,0.3); text-transform: uppercase; font-family: var(--font);
 }
 
-/* ===== AVATAR ===== */
-.avatar-section {
-  display: flex;
-  justify-content: center;
-  position: relative;
-  z-index: 3;
-}
-
-.avatar-wrap {
-  margin-top: -52px;
-  display: flex; flex-direction: column; align-items: center;
-}
-
+/* AVATAR */
+.avatar-section { display: flex; justify-content: center; position: relative; z-index: 3; }
+.avatar-wrap { margin-top: -48px; display: flex; flex-direction: column; align-items: center; }
 .avatar {
-  width: 96px; height: 96px; border-radius: 50%;
-  border: 3px solid rgba(255,255,255,0.9);
-  background: linear-gradient(135deg, #333, #111);
+  width: 90px; height: 90px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.95);
+  background: linear-gradient(135deg,#333,#111);
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 32px; color: white;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.1);
+  font-family: var(--font); font-size: 28px; font-weight: 700; color: white;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.35);
   overflow: hidden; cursor: pointer; position: relative;
   transition: transform 0.2s, box-shadow 0.2s;
 }
-
-.avatar:hover {
-  transform: scale(1.04);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 3px rgba(227,24,55,0.4);
-}
-
+.avatar:hover { transform:scale(1.05); box-shadow:0 10px 36px rgba(0,0,0,0.4),0 0 0 3px rgba(227,24,55,0.35); }
 .avatar-img { width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
-
 .avatar-overlay {
   position: absolute; inset: 0; border-radius: 50%;
-  background: rgba(0,0,0,0.55);
+  background: rgba(0,0,0,0.52);
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px; opacity: 0; transition: opacity 0.2s;
+  font-size: 20px; opacity: 0; transition: opacity 0.2s;
 }
 .avatar:hover .avatar-overlay { opacity: 1; }
-.avatar-hint {
-  font-size: 9px; color: var(--muted);
-  margin-top: 6px; letter-spacing: 1.5px;
-  font-family: 'DM Mono', monospace; text-transform: uppercase;
-}
+.avatar-hint { font-size: 9px; color: var(--muted); margin-top: 5px; letter-spacing: 1.5px; text-transform: uppercase; font-family: var(--font); }
 #avatarInput { display: none; }
 
-/* ===== BODY ===== */
-.card-body {
-  padding: 20px 22px 26px;
-  position: relative; z-index: 2;
-}
+/* BODY */
+.card-body { padding: 18px 20px 24px; position: relative; z-index: 2; }
 
 .name {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 36px;
-  text-align: center;
-  color: var(--zebra);
-  letter-spacing: 1.5px;
-  line-height: 1;
-  margin-top: 2px;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  font-family: var(--font); font-size: 26px; font-weight: 700;
+  text-align: center; color: var(--zebra); letter-spacing: 0.5px; line-height: 1.1; margin-top: 4px;
 }
-
 .title-line {
-  text-align: center; margin-top: 5px;
-  font-size: 10px; font-weight: 600;
-  color: var(--accent);
-  letter-spacing: 3px; text-transform: uppercase;
-  font-family: 'DM Mono', monospace;
+  text-align: center; margin-top: 5px; font-size: 10px; font-weight: 700;
+  color: var(--accent); letter-spacing: 3px; text-transform: uppercase; font-family: var(--font);
 }
+.company-line { text-align: center; margin-top: 3px; font-size: 12px; color: var(--muted); }
 
-.company-line {
-  text-align: center; margin-top: 3px;
-  font-size: 12px; color: var(--muted); font-weight: 400;
-}
-
-/* Divider */
 .divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent);
-  margin: 18px 0;
+  margin: 16px 0;
 }
 
-/* ===== SECTION ===== */
-.section { margin-top: 18px; }
+.section { margin-top: 16px; }
 .section-label {
-  font-size: 9px; font-weight: 500;
-  letter-spacing: 2.5px; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 10px; padding-left: 2px;
-  font-family: 'DM Mono', monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 9px; padding-left: 2px; font-family: var(--font);
 }
 
-/* ===== LINKS ===== */
+/* LINKS — stagger animate */
 .links { display: flex; flex-direction: column; gap: 7px; }
 
 .link-btn {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: 11px;
   padding: 10px 12px;
-  background: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.6);
   border: 1px solid rgba(0,0,0,0.07);
-  border-radius: 13px;
+  border-radius: 12px;
   text-decoration: none; color: var(--text);
-  transition: all 0.18s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
   cursor: pointer;
-  backdrop-filter: blur(8px);
+  opacity: 0;
+  transform: translateX(-20px);
+  animation: slideIn 0.45s cubic-bezier(0.22,1,0.36,1) forwards;
 }
+.link-btn:nth-child(1) { animation-delay: 0.55s; }
+.link-btn:nth-child(2) { animation-delay: 0.68s; }
+.link-btn:nth-child(3) { animation-delay: 0.81s; }
+.link-btn:nth-child(4) { animation-delay: 0.94s; }
+
+@keyframes slideIn { to { opacity:1; transform:translateX(0); } }
 
 .link-btn:hover {
-  background: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.95);
   border-color: rgba(227,24,55,0.2);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(227,24,55,0.12);
-  transform: translateX(4px) translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1), 4px 0 0 var(--accent) inset;
+  transform: translateX(4px);
 }
-
 .link-icon {
   width: 36px; height: 36px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; font-size: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  flex-shrink: 0; font-size: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
-
-.link-label { font-size: 9px; color: var(--muted); font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'DM Mono', monospace; }
-.link-value { font-size: 13px; font-weight: 500; margin-top: 1px; }
+.link-label { font-size: 9px; color: var(--muted); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; font-family: var(--font); }
+.link-value { font-size: 13px; font-weight: 600; margin-top: 1px; }
 .link-text { text-align: left; line-height: 1.4; flex: 1; }
-.link-arrow { color: #bbb; font-size: 20px; margin-left: auto; line-height: 1; }
+.link-arrow { color: #bbb; font-size: 20px; margin-left: auto; }
 
-/* ===== TAX BOX ===== */
+/* TAX BOX */
 .tax-box {
   background: rgba(255,255,255,0.5);
   border: 1px solid rgba(0,0,0,0.07);
-  border-radius: 14px;
-  overflow: hidden;
-  backdrop-filter: blur(8px);
+  border-radius: 13px; overflow: hidden;
+  opacity: 0;
+  animation: fadeUp 0.5s ease 1.05s forwards;
 }
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 
 .tax-row {
-  display: flex; align-items: flex-start;
-  justify-content: space-between; gap: 10px;
-  padding: 10px 13px;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+  padding: 9px 13px; border-bottom: 1px solid rgba(0,0,0,0.05);
+  transition: background 0.15s;
 }
 .tax-row:last-child { border-bottom: none; }
-
+.tax-row:hover { background: rgba(255,255,255,0.65); }
 .tax-key {
-  font-size: 10px; color: var(--muted); font-weight: 500;
-  letter-spacing: 0.5px; text-transform: uppercase;
-  white-space: nowrap; padding-top: 2px;
-  font-family: 'DM Mono', monospace;
-  flex-shrink: 0; min-width: 90px;
+  font-size: 9px; color: var(--muted); font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; white-space: nowrap; padding-top: 2px;
+  font-family: var(--font); flex-shrink: 0; min-width: 88px;
 }
 .tax-val-wrap { display: flex; align-items: center; gap: 6px; justify-content: flex-end; flex: 1; }
-.tax-val { font-size: 12px; font-weight: 500; color: var(--text); text-align: right; }
-.tax-id-val {
-  font-family: 'DM Mono', monospace;
-  font-size: 15px; font-weight: 600; letter-spacing: 2px;
-  color: var(--zebra);
-}
-
+.tax-val { font-size: 12px; font-weight: 600; color: var(--text); text-align: right; }
+.tax-id-val { font-family: var(--font); font-size: 14px; font-weight: 700; letter-spacing: 2px; color: var(--zebra); }
 .copy-btn {
-  background: none;
-  border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 6px; padding: 2px 8px;
-  font-size: 10px; color: var(--muted); cursor: pointer;
-  flex-shrink: 0; font-family: 'DM Mono', monospace;
-  transition: all 0.15s; font-weight: 500;
-  letter-spacing: 0.5px;
+  background: none; border: 1px solid rgba(0,0,0,0.12); border-radius: 5px; padding: 2px 8px;
+  font-size: 9px; color: var(--muted); cursor: pointer; font-family: var(--font);
+  font-weight: 700; transition: all 0.15s; flex-shrink: 0;
 }
 .copy-btn:hover { background: var(--zebra); color: white; border-color: var(--zebra); }
 
-/* ===== ACTION BUTTONS ===== */
+/* BUTTONS */
 .btn-row {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 10px; margin-top: 18px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px;
+  opacity: 0; animation: fadeUp 0.5s ease 1.18s forwards;
 }
-
 .btn-half {
-  padding: 13px 10px;
-  border: none; border-radius: 13px;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px; font-weight: 500; letter-spacing: 1.5px;
+  padding: 13px 8px; border: none; border-radius: 12px;
+  font-family: var(--font); font-size: 11px; font-weight: 700; letter-spacing: 1px;
   text-transform: uppercase; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 7px;
-  transition: all 0.2s ease;
-  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
-
 .btn-save {
-  background: linear-gradient(135deg, #1a1a1a, #333);
-  color: white;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  background: linear-gradient(135deg,#1a1a1a,#383838); color: white;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
 }
-.btn-save:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-}
-
+.btn-save:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,0,0,0.4); }
 .btn-qr {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: white;
-  box-shadow: 0 4px 16px rgba(227,24,55,0.3);
+  background: linear-gradient(135deg,#e31837,#ff4d30); color: white;
+  box-shadow: 0 4px 14px rgba(227,24,55,0.4);
 }
-.btn-qr:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(227,24,55,0.45);
-}
+.btn-qr:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(227,24,55,0.5); }
 
-/* ===== FOOTER ===== */
+/* FOOTER */
 .card-footer {
-  text-align: center;
-  padding: 12px 20px 16px;
-  font-size: 9px; letter-spacing: 2px;
-  color: rgba(0,0,0,0.25); text-transform: uppercase;
-  font-family: 'DM Mono', monospace;
-  border-top: 1px solid rgba(0,0,0,0.05);
-  position: relative; z-index: 2;
+  text-align: center; padding: 10px 20px 14px;
+  font-size: 9px; letter-spacing: 2px; color: rgba(0,0,0,0.22);
+  text-transform: uppercase; font-family: var(--font);
+  border-top: 1px solid rgba(0,0,0,0.05); position: relative; z-index: 2;
 }
 
-/* ===== QR MODAL ===== */
+/* QR MODAL */
 .qr-backdrop {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(10px);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1000;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.25s;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;
+  z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.25s;
 }
 .qr-backdrop.open { opacity: 1; pointer-events: all; }
-
 .qr-modal {
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(20px);
-  border-radius: 22px;
-  padding: 28px 24px;
-  max-width: 300px; width: 90%;
-  text-align: center;
-  transform: translateY(20px) scale(0.96);
+  background: rgba(255,255,255,0.94); backdrop-filter: blur(20px);
+  border-radius: 20px; padding: 26px 22px; max-width: 290px; width: 90%; text-align: center;
+  transform: scale(0.94) translateY(16px);
   transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
-  border: 1px solid rgba(255,255,255,0.8);
-  box-shadow: 0 32px 80px rgba(0,0,0,0.25);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.3);
 }
-.qr-backdrop.open .qr-modal { transform: translateY(0) scale(1); }
-
-.qr-modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; color: var(--zebra); }
-.qr-modal-sub { font-size: 11px; color: var(--muted); margin-top: 4px; margin-bottom: 16px; }
+.qr-backdrop.open .qr-modal { transform: scale(1) translateY(0); }
+.qr-modal-title { font-family: var(--font); font-size: 18px; font-weight: 700; letter-spacing: 1px; color: var(--zebra); }
+.qr-modal-sub { font-size: 11px; color: var(--muted); margin-top: 4px; margin-bottom: 14px; }
 #qrContainer { display: flex; justify-content: center; }
-#qrContainer img, #qrContainer canvas { border-radius: 10px; }
-.qr-url { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 12px; word-break: break-all; }
+#qrContainer img, #qrContainer canvas { border-radius: 8px; }
+.qr-url { font-size: 9px; color: var(--muted); margin-top: 10px; word-break: break-all; font-family: var(--font); }
 .qr-close {
-  margin-top: 16px;
-  background: var(--zebra); color: white;
-  border: none; border-radius: 10px;
-  padding: 10px 28px; cursor: pointer;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
-  transition: opacity 0.15s;
+  margin-top: 14px; background: var(--zebra); color: white;
+  border: none; border-radius: 10px; padding: 9px 26px; cursor: pointer;
+  font-family: var(--font); font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; transition: opacity 0.15s;
 }
 .qr-close:hover { opacity: 0.8; }
 
-/* ===== TOAST ===== */
+/* TOAST */
 .toast {
-  position: fixed; bottom: 28px; left: 50%; z-index: 9999;
+  position: fixed; bottom: 24px; left: 50%; z-index: 9999;
   transform: translateX(-50%) translateY(70px);
-  background: rgba(26,26,26,0.92);
-  backdrop-filter: blur(12px);
-  color: white;
-  padding: 10px 22px; border-radius: 30px;
-  font-size: 12px; font-weight: 500; letter-spacing: 0.3px;
+  background: rgba(20,20,20,0.92); backdrop-filter: blur(12px);
+  color: white; padding: 10px 22px; border-radius: 28px;
+  font-size: 12px; font-weight: 600;
   transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
-  font-family: 'DM Sans', sans-serif;
-  white-space: nowrap;
+  font-family: var(--font); white-space: nowrap;
   border: 1px solid rgba(255,255,255,0.1);
 }
 .toast.show { transform: translateX(-50%) translateY(0); }
@@ -449,17 +319,14 @@ body {
 </head>
 <body>
 
-<!-- 3D Background Canvas -->
 <canvas id="bg-canvas"></canvas>
 
-<!-- Card -->
 <div class="scene" id="scene">
   <div class="card" id="card"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- QR Modal -->
 <div class="qr-backdrop" id="qrBackdrop" onclick="closeQR(event)">
   <div class="qr-modal">
     <div class="qr-modal-title">📲 Chia sẻ card</div>
@@ -472,22 +339,22 @@ body {
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
 <script>
+
 // ================================================================
 // 3D BACKGROUND
 // ================================================================
-(function() {
+(function () {
   const canvas = document.getElementById('bg-canvas');
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setClearColor(0x08080e, 1);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x07070d, 1);
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x07070d, 0.022);
+  scene.fog = new THREE.FogExp2(0x08080e, 0.014);
 
-  const camera = new THREE.PerspectiveCamera(65, 1, 0.1, 200);
-  camera.position.set(0, 0, 30);
+  const camera = new THREE.PerspectiveCamera(70, 1, 0.1, 200);
+  camera.position.z = 24;
 
   function resize() {
     const w = window.innerWidth, h = window.innerHeight;
@@ -499,39 +366,39 @@ body {
   window.addEventListener('resize', resize);
 
   // Lights
-  scene.add(new THREE.AmbientLight(0xffffff, 0.15));
-  const r1 = new THREE.PointLight(0xe31837, 5, 40);
-  r1.position.set(8, 6, 4);
-  scene.add(r1);
-  const b1 = new THREE.PointLight(0x1a3aff, 3, 35);
-  b1.position.set(-10, -4, 2);
-  scene.add(b1);
-  const w1 = new THREE.PointLight(0xffeedd, 2, 60);
-  w1.position.set(0, 20, 10);
-  scene.add(w1);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.12));
+  const rL = new THREE.PointLight(0xe31837, 7, 50);
+  rL.position.set(6, 5, 5); scene.add(rL);
+  const bL = new THREE.PointLight(0x2244ff, 5, 45);
+  bL.position.set(-8, -4, 3); scene.add(bL);
+  const wL = new THREE.PointLight(0xfff0e0, 2.5, 70);
+  wL.position.set(0, 18, 8); scene.add(wL);
 
-  // Floating spheres / icosahedra
+  // Objects — kích thước to hơn, phân bố gần hơn → thấy rõ trên mobile
   const objs = [];
   const mats = [
-    new THREE.MeshStandardMaterial({ color: 0xe31837, metalness: 0.85, roughness: 0.12 }),
-    new THREE.MeshStandardMaterial({ color: 0x1a1a2e, metalness: 0.95, roughness: 0.05 }),
-    new THREE.MeshStandardMaterial({ color: 0x2244cc, metalness: 0.8, roughness: 0.15, transparent: true, opacity: 0.7 }),
-    new THREE.MeshStandardMaterial({ color: 0xffeedd, metalness: 0.9, roughness: 0.1, transparent: true, opacity: 0.5 }),
+    new THREE.MeshStandardMaterial({ color:0xe31837, metalness:0.88, roughness:0.1 }),
+    new THREE.MeshStandardMaterial({ color:0x1a1a2e, metalness:0.95, roughness:0.05 }),
+    new THREE.MeshStandardMaterial({ color:0x3355ff, metalness:0.8,  roughness:0.15, transparent:true, opacity:0.75 }),
+    new THREE.MeshStandardMaterial({ color:0xffeedd, metalness:0.85, roughness:0.1,  transparent:true, opacity:0.65 }),
+    new THREE.MeshStandardMaterial({ color:0xff4422, metalness:0.7,  roughness:0.2,  transparent:true, opacity:0.8 }),
   ];
 
-  for (let i = 0; i < 22; i++) {
-    const t = Math.random();
-    const geo = t < 0.4
-      ? new THREE.IcosahedronGeometry(0.3 + Math.random() * 0.7, 0)
-      : t < 0.7
-        ? new THREE.OctahedronGeometry(0.25 + Math.random() * 0.6, 0)
-        : new THREE.TetrahedronGeometry(0.3 + Math.random() * 0.5, 0);
-    const mat = mats[Math.floor(Math.random() * mats.length)];
-    const mesh = new THREE.Mesh(geo, mat);
+  for (let i = 0; i < 30; i++) {
+    const rnd  = Math.random();
+    const size = 0.55 + Math.random() * 1.5;   // to hơn bản cũ
+    let geo;
+    if      (rnd < 0.35) geo = new THREE.IcosahedronGeometry(size, 0);
+    else if (rnd < 0.60) geo = new THREE.OctahedronGeometry(size, 0);
+    else if (rnd < 0.80) geo = new THREE.TetrahedronGeometry(size, 0);
+    else                 geo = new THREE.BoxGeometry(size, size, size);
 
-    const r = 12 + Math.random() * 14;
+    const mesh = new THREE.Mesh(geo, mats[i % mats.length]);
+
+    // radius 7-18 → thấy rõ kể cả màn nhỏ
+    const r     = 7 + Math.random() * 11;
     const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
+    const phi   = Math.acos(2 * Math.random() - 1);
     mesh.position.set(
       r * Math.sin(phi) * Math.cos(theta),
       r * Math.sin(phi) * Math.sin(theta),
@@ -541,92 +408,83 @@ body {
     scene.add(mesh);
     objs.push({
       mesh,
-      rx: (Math.random()-0.5)*0.012,
-      ry: (Math.random()-0.5)*0.015,
-      ot: Math.random()*Math.PI*2,
-      os: (Math.random()-0.5)*0.002,
-      or: r, ophiSin: Math.sin(phi), ophiCos: Math.cos(phi), oTheta: theta,
-      fy: Math.random()*Math.PI*2,
+      rx: (Math.random()-0.5)*0.018,
+      ry: (Math.random()-0.5)*0.022,
+      or: r, ot: theta, os: (Math.random()-0.5)*0.0025,
+      pSin: Math.sin(phi), pCos: Math.cos(phi),
+      fOff: Math.random()*Math.PI*2,
     });
   }
 
-  // Particle field
-  const N = 2000;
-  const pos = new Float32Array(N * 3);
-  const col = new Float32Array(N * 3);
+  // Particles — size 0.24, dày hơn
+  const N = 1800;
+  const pos = new Float32Array(N*3), col = new Float32Array(N*3);
   for (let i = 0; i < N; i++) {
-    const r = 18 + Math.random() * 30;
-    const th = Math.random() * Math.PI * 2;
-    const ph = Math.acos(2 * Math.random() - 1);
-    pos[i*3]   = r * Math.sin(ph) * Math.cos(th);
-    pos[i*3+1] = r * Math.sin(ph) * Math.sin(th);
-    pos[i*3+2] = r * Math.cos(ph);
+    const r = 12 + Math.random() * 25;
+    const th = Math.random()*Math.PI*2, ph = Math.acos(2*Math.random()-1);
+    pos[i*3]   = r*Math.sin(ph)*Math.cos(th);
+    pos[i*3+1] = r*Math.sin(ph)*Math.sin(th);
+    pos[i*3+2] = r*Math.cos(ph);
     const c = Math.random();
-    if (c < 0.35) { col[i*3]=0.9; col[i*3+1]=0.09; col[i*3+2]=0.2; }
-    else if (c < 0.6) { col[i*3]=0.1; col[i*3+1]=0.25; col[i*3+2]=1; }
-    else { col[i*3]=1; col[i*3+1]=0.95; col[i*3+2]=0.9; }
+    if      (c < 0.38) { col[i*3]=0.9;  col[i*3+1]=0.08; col[i*3+2]=0.18; }
+    else if (c < 0.65) { col[i*3]=0.15; col[i*3+1]=0.25; col[i*3+2]=1.0;  }
+    else               { col[i*3]=1.0;  col[i*3+1]=0.95; col[i*3+2]=0.88; }
   }
   const pGeo = new THREE.BufferGeometry();
   pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  pGeo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-  const pMat = new THREE.PointsMaterial({ size: 0.12, vertexColors: true, transparent: true, opacity: 0.65, sizeAttenuation: true });
-  const pts = new THREE.Points(pGeo, pMat);
-  scene.add(pts);
+  pGeo.setAttribute('color',    new THREE.BufferAttribute(col, 3));
+  scene.add(new THREE.Points(pGeo,
+    new THREE.PointsMaterial({ size:0.24, vertexColors:true, transparent:true, opacity:0.85, sizeAttenuation:true })
+  ));
 
-  // Mouse parallax
-  let mx = 0, my = 0;
+  // Parallax input
+  let tx = 0, ty = 0;
   document.addEventListener('mousemove', e => {
-    mx = (e.clientX / window.innerWidth - 0.5) * 2;
-    my = (e.clientY / window.innerHeight - 0.5) * 2;
+    tx = (e.clientX/window.innerWidth  - 0.5) * 2;
+    ty = (e.clientY/window.innerHeight - 0.5) * 2;
+  });
+  window.addEventListener('deviceorientation', e => {
+    if (e.gamma != null) { tx = e.gamma/45*0.8; ty = e.beta/45*0.6; }
   });
 
   let t = 0;
-  function animate() {
+  (function animate() {
     requestAnimationFrame(animate);
-    t += 0.008;
-
-    camera.position.x += (mx * 3 - camera.position.x) * 0.03;
-    camera.position.y += (-my * 2 - camera.position.y) * 0.03;
+    t += 0.007;
+    camera.position.x += (tx*3.5 - camera.position.x)*0.04;
+    camera.position.y += (-ty*2.5 - camera.position.y)*0.04;
     camera.lookAt(scene.position);
 
-    r1.position.x = Math.sin(t * 0.7) * 12;
-    r1.position.z = Math.cos(t * 0.5) * 8;
-    b1.position.x = Math.cos(t * 0.4) * 10;
-    b1.position.y = Math.sin(t * 0.6) * 7;
+    rL.position.x = Math.sin(t*0.65)*14;
+    rL.position.z = Math.cos(t*0.5)*9;
+    bL.position.x = Math.cos(t*0.4)*11;
+    bL.position.y = Math.sin(t*0.55)*7;
 
     objs.forEach(o => {
-      o.oTheta += o.os;
-      o.mesh.position.x = o.or * o.ophiSin * Math.cos(o.oTheta);
-      o.mesh.position.y = o.or * o.ophiSin * Math.sin(o.oTheta) + Math.sin(t*0.6 + o.fy)*1.2;
+      o.ot += o.os;
+      o.mesh.position.x = o.or * o.pSin * Math.cos(o.ot);
+      o.mesh.position.y = o.or * o.pSin * Math.sin(o.ot) + Math.sin(t*0.55+o.fOff)*1.5;
       o.mesh.rotation.x += o.rx;
       o.mesh.rotation.y += o.ry;
     });
-
-    pts.rotation.y += 0.0003;
     renderer.render(scene, camera);
-  }
-  animate();
+  })();
 })();
 
 // ================================================================
-// CARD TILT
+// TILT (desktop only)
 // ================================================================
-const scene3d = document.getElementById('scene');
+const sceneEl = document.getElementById('scene');
 const cardEl  = document.getElementById('card');
-
-scene3d.addEventListener('mousemove', e => {
-  const rect = scene3d.getBoundingClientRect();
-  const x = (e.clientX - rect.left) / rect.width - 0.5;
-  const y = (e.clientY - rect.top)  / rect.height - 0.5;
-  cardEl.style.transform = `perspective(1200px) rotateY(${x * 10}deg) rotateX(${-y * 8}deg) translateZ(6px)`;
-  cardEl.style.boxShadow = `
-    ${-x*18}px ${y*12}px 60px rgba(0,0,0,0.28),
-    0 8px 24px rgba(0,0,0,0.14),
-    ${x*4}px ${-y*4}px 0 rgba(255,255,255,0.06) inset
-  `;
+sceneEl.addEventListener('mousemove', e => {
+  if (window.innerWidth < 600) return;
+  const r = sceneEl.getBoundingClientRect();
+  const x = (e.clientX-r.left)/r.width - 0.5;
+  const y = (e.clientY-r.top)/r.height - 0.5;
+  cardEl.style.transform = `perspective(1000px) rotateY(${x*10}deg) rotateX(${-y*8}deg) translateZ(8px)`;
+  cardEl.style.boxShadow = `${-x*20}px ${y*14}px 60px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.2)`;
 });
-
-scene3d.addEventListener('mouseleave', () => {
+sceneEl.addEventListener('mouseleave', () => {
   cardEl.style.transform = '';
   cardEl.style.boxShadow = '';
 });
@@ -636,151 +494,109 @@ scene3d.addEventListener('mouseleave', () => {
 // ================================================================
 const profiles = {
   "phu": {
-    name: "Lữ Thành Phú",
-    title: "Sales Engineer",
-    company: "Zebra Technologies (Vietnam) Ltd.",
-    avatarUrl: "avatars/phu.jpg",
-    initials: "PL",
-    links: [
-      { icon: "📞", label: "Mobile",   value: "+84 988 667 487",        color: "#25d366", bg: "rgba(37,211,102,0.12)", action: "tel:+84988667487" },
-      { icon: "💬", label: "Whatsapp", value: "Nhắn tin Whatsapp",      color: "#25d366", bg: "rgba(37,211,102,0.12)", action: "https://wa.me/qr/PY4GG7RPATGRC1" },
-      { icon: "✉️", label: "Email",    value: "luthanh.phu@zebra.com",  color: "#e31837", bg: "rgba(227,24,55,0.1)",  action: "mailto:luthanh.phu@zebra.com" },
-      { icon: "💼", label: "LinkedIn", value: "linkedin.com/in/phu-lu", color: "#0a66c2", bg: "rgba(10,102,194,0.1)", action: "https://www.linkedin.com/in/phu-lu-4314a859/" },
+    name:"Lữ Thành Phú", title:"Sales Engineer",
+    company:"Zebra Technologies (Vietnam) Ltd.",
+    avatarUrl:"avatars/phu.jpg", initials:"PL",
+    links:[
+      { icon:"📞", label:"Mobile",   value:"+84 988 667 487",       color:"#25d366", bg:"rgba(37,211,102,0.13)", action:"tel:+84988667487" },
+      { icon:"💬", label:"Whatsapp", value:"Nhắn tin Whatsapp",     color:"#25d366", bg:"rgba(37,211,102,0.13)", action:"https://wa.me/qr/PY4GG7RPATGRC1" },
+      { icon:"✉️", label:"Email",    value:"luthanh.phu@zebra.com", color:"#e31837", bg:"rgba(227,24,55,0.1)",   action:"mailto:luthanh.phu@zebra.com" },
+      { icon:"💼", label:"LinkedIn", value:"linkedin.com/in/phu-lu",color:"#0a66c2", bg:"rgba(10,102,194,0.1)", action:"https://www.linkedin.com/in/phu-lu-4314a859/" },
     ],
-    tax: {
-      companyName:    "CÔNG TY TNHH ZEBRA TECHNOLOGIES VIỆT NAM",
-      taxId:          "0319 020 226",
-      address:        "Phòng 1014, Tầng 1, 87A Hàm Nghi, Phường Sài Gòn, TP.HCM",
-      representative: "CÔNG TY TNHH ZEBRA TECHNOLOGIES VIỆT NAM",
-    },
-    vcard: { fn:"Lữ Thành Phú", phone:"+84988667487", email:"luthanh.phu@zebra.com", org:"Zebra Technologies Vietnam", title:"Sales Engineer" }
+    tax:{ companyName:"CÔNG TY TNHH ZEBRA TECHNOLOGIES VIỆT NAM", taxId:"0319 020 226", address:"Phòng 1014, Tầng 1, 87A Hàm Nghi, Phường Sài Gòn, TP.HCM", representative:"CÔNG TY TNHH ZEBRA TECHNOLOGIES VIỆT NAM" },
+    vcard:{ fn:"Lữ Thành Phú", phone:"+84988667487", email:"luthanh.phu@zebra.com", org:"Zebra Technologies Vietnam", title:"Sales Engineer" }
   },
   "demo": {
-    name: "Nguyễn Thị Lan",
-    title: "Account Manager",
-    company: "Zebra Technologies Vietnam",
-    avatarUrl: null,
-    initials: "NL",
-    links: [
-      { icon: "📞", label: "Mobile", value: "+84 900 000 001", color: "#25d366", bg: "rgba(37,211,102,0.12)", action: "tel:+84900000001" },
-      { icon: "✉️", label: "Email",  value: "lan@zebra.com",   color: "#e31837", bg: "rgba(227,24,55,0.1)",  action: "mailto:lan@zebra.com" },
+    name:"Nguyễn Thị Lan", title:"Account Manager",
+    company:"Zebra Technologies Vietnam",
+    avatarUrl:null, initials:"NL",
+    links:[
+      { icon:"📞", label:"Mobile", value:"+84 900 000 001", color:"#25d366", bg:"rgba(37,211,102,0.13)", action:"tel:+84900000001" },
+      { icon:"✉️", label:"Email",  value:"lan@zebra.com",   color:"#e31837", bg:"rgba(227,24,55,0.1)",   action:"mailto:lan@zebra.com" },
     ],
-    tax: {
-      companyName:    "CÔNG TY TNHH ZEBRA TECHNOLOGIES VIỆT NAM",
-      taxId:          "0319 020 226",
-      address:        "Phòng 1014, Tầng 1, 87A Hàm Nghi, Phường Sài Gòn, TP.HCM",
-      representative: "CÔNG TY TNHH ZEBRA TECHNOLOGIES VIỆT NAM",
-    },
-    vcard: { fn:"Nguyễn Thị Lan", phone:"+84900000001", email:"lan@zebra.com", org:"Zebra Technologies Vietnam", title:"Account Manager" }
+    tax:{ companyName:"CÔNG TY TNHH ZEBRA TECHNOLOGIES VIỆT NAM", taxId:"0319 020 226", address:"Phòng 1014, Tầng 1, 87A Hàm Nghi, Phường Sài Gòn, TP.HCM", representative:"CÔNG TY TNHH ZEBRA TECHNOLOGIES VIỆT NAM" },
+    vcard:{ fn:"Nguyễn Thị Lan", phone:"+84900000001", email:"lan@zebra.com", org:"Zebra Technologies Vietnam", title:"Account Manager" }
   }
 };
 
-// ================================================================
-const params = new URLSearchParams(window.location.search);
-const id = params.get('id') || 'phu';
-const p  = profiles[id];
-
-let avatarSrc = p ? (p.avatarUrl || null) : null;
+const params  = new URLSearchParams(window.location.search);
+const id      = params.get('id') || 'phu';
+const p       = profiles[id];
+let avatarSrc = p ? (p.avatarUrl||null) : null;
 
 function avatarHTML() {
-  const inner = avatarSrc
-    ? `<img class="avatar-img" src="${avatarSrc}" alt="avatar" onerror="this.style.display='none';this.parentNode.querySelector('.avatar-init').style.display='flex'">`
-    : '';
+  const inner = avatarSrc ? `<img class="avatar-img" src="${avatarSrc}" alt="avatar">` : `<span>${p.initials}</span>`;
   return `
     <div class="avatar" id="avatarCircle" onclick="document.getElementById('avatarInput').click()">
-      ${inner}
-      <span class="avatar-init" style="${avatarSrc ? 'display:none' : ''}">${p.initials}</span>
-      <div class="avatar-overlay">📷</div>
+      ${inner}<div class="avatar-overlay">📷</div>
     </div>
     <input type="file" id="avatarInput" accept="image/*">
-    <div class="avatar-hint">Nhấn để thay ảnh</div>
-  `;
+    <div class="avatar-hint">Nhấn để thay ảnh</div>`;
 }
 
 if (!p) {
-  cardEl.innerHTML = `<div style="padding:48px 24px;text-align:center;color:#aaa;font-family:sans-serif">Profile không tồn tại.</div>`;
+  cardEl.innerHTML = `<div style="padding:48px 24px;text-align:center;color:#aaa">Profile không tồn tại.</div>`;
 } else {
   document.title = p.name + " · Zebra";
-
-  const linksHTML = p.links.map(l => `
-    <a class="link-btn" href="${l.action}" ${l.action.startsWith('http') ? 'target="_blank"' : ''}>
+  const linksHTML = p.links.map(l=>`
+    <a class="link-btn" href="${l.action}" ${l.action.startsWith('http')?'target="_blank"':''}>
       <div class="link-icon" style="background:${l.bg}">${l.icon}</div>
-      <div class="link-text">
-        <div class="link-label">${l.label}</div>
-        <div class="link-value">${l.value}</div>
-      </div>
+      <div class="link-text"><div class="link-label">${l.label}</div><div class="link-value">${l.value}</div></div>
       <span class="link-arrow">›</span>
-    </a>
-  `).join('');
+    </a>`).join('');
 
-  const t = p.tax;
-  const taxRowsData = [
-    { key:"Tên công ty", val:t.companyName, cls:"",           copy:true  },
-    { key:"Mã số thuế",  val:t.taxId,       cls:"tax-id-val", copy:true  },
-    { key:"Địa chỉ",     val:t.address,     cls:"",           copy:false },
-    { key:"Đại diện",    val:t.representative, cls:"",        copy:false },
+  const taxRows = [
+    { key:"Tên công ty", val:p.tax.companyName,   cls:"",           copy:true  },
+    { key:"Mã số thuế",  val:p.tax.taxId,          cls:"tax-id-val", copy:true  },
+    { key:"Địa chỉ",     val:p.tax.address,        cls:"",           copy:false },
+    { key:"Đại diện",    val:p.tax.representative, cls:"",           copy:false },
   ];
-
-  const taxHTML = taxRowsData.map(r => `
+  const taxHTML = taxRows.map(r=>`
     <div class="tax-row">
       <span class="tax-key">${r.key}</span>
       <div class="tax-val-wrap">
         <span class="tax-val ${r.cls}">${r.val}</span>
-        ${r.copy ? `<button class="copy-btn" onclick="copyText(event,'${r.val}')">Copy</button>` : ''}
+        ${r.copy?`<button class="copy-btn" onclick="copyText(event,'${r.val}')">Copy</button>`:''}
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 
   cardEl.innerHTML = `
     <div class="card-header">
       <img class="zebra-logo-img" src="zebra-logo.png" alt="Zebra Technologies"
-           onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-      <div class="zebra-logo-fallback" style="display:none">ZEBRA</div>
+        onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <div class="zebra-logo-fallback">ZEBRA</div>
       <div class="nfc-badge"><div class="nfc-dot"></div>NFC Card</div>
     </div>
-
     <div class="card-hero">
       <div class="card-hero-grid"></div>
       <div class="card-hero-glow"></div>
       <div class="card-hero-label">Zebra Technologies · Digital Profile</div>
     </div>
-
     <div class="avatar-section">
       <div class="avatar-wrap" id="avatarWrap">${avatarHTML()}</div>
     </div>
-
     <div class="card-body">
       <div class="name">${p.name}</div>
       <div class="title-line">${p.title}</div>
       <div class="company-line">${p.company}</div>
-
       <div class="divider"></div>
-
-      <div class="section">
-        <div class="section-label">Liên hệ</div>
-        <div class="links">${linksHTML}</div>
-      </div>
-
+      <div class="section"><div class="section-label">Liên hệ</div><div class="links">${linksHTML}</div></div>
       <div class="section">
         <div class="section-label">Thông tin công ty · Hoá đơn VAT</div>
         <div class="tax-box">${taxHTML}</div>
       </div>
-
       <div class="btn-row">
         <button class="btn-half btn-save" onclick="saveContact()">💾 Lưu danh bạ</button>
-        <button class="btn-half btn-qr" onclick="openQR()">📲 Chia sẻ QR</button>
+        <button class="btn-half btn-qr"   onclick="openQR()">📲 Chia sẻ QR</button>
       </div>
     </div>
-
-    <div class="card-footer">Zebra Technologies · Digital Business Card</div>
-  `;
+    <div class="card-footer">Zebra Technologies · Digital Business Card</div>`;
 
   function attachAvatarListener() {
     const inp = document.getElementById('avatarInput');
     if (!inp) return;
-    inp.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+    inp.addEventListener('change', e => {
+      const file = e.target.files[0]; if (!file) return;
       const reader = new FileReader();
       reader.onload = ev => {
         avatarSrc = ev.target.result;
@@ -793,47 +609,32 @@ if (!p) {
   attachAvatarListener();
 }
 
-// ================================================================
 function openQR() {
-  const profileUrl = `https://phu-lu.github.io/card/?id=${id}`;
-  const container = document.getElementById('qrContainer');
-  container.innerHTML = '';
-  new QRCode(container, {
-    text: profileUrl,
-    width: 210, height: 210,
-    colorDark: '#1a1a1a', colorLight: '#ffffff',
-    correctLevel: QRCode.CorrectLevel.M
-  });
-  document.getElementById('qrUrl').textContent = profileUrl;
+  const url = `https://phu-lu.github.io/card/?id=${id}`;
+  const c = document.getElementById('qrContainer');
+  c.innerHTML = '';
+  new QRCode(c,{text:url,width:200,height:200,colorDark:'#1a1a1a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  document.getElementById('qrUrl').textContent = url;
   document.getElementById('qrBackdrop').classList.add('open');
 }
-
 function closeQR(e) {
-  if (e.target === document.getElementById('qrBackdrop'))
+  if (e.target===document.getElementById('qrBackdrop'))
     document.getElementById('qrBackdrop').classList.remove('open');
 }
-
 function saveContact() {
   const v = p.vcard;
-  const vcf = `BEGIN:VCARD\nVERSION:3.0\nFN:${v.fn}\nORG:${v.org}\nTITLE:${v.title}\nTEL;TYPE=CELL:${v.phone}\nEMAIL:${v.email}\nEND:VCARD`;
-  const a = Object.assign(document.createElement('a'), {
-    href: URL.createObjectURL(new Blob([vcf], {type:'text/vcard'})),
-    download: `${id}.vcf`
-  });
-  a.click();
+  const vcf=`BEGIN:VCARD\nVERSION:3.0\nFN:${v.fn}\nORG:${v.org}\nTITLE:${v.title}\nTEL;TYPE=CELL:${v.phone}\nEMAIL:${v.email}\nEND:VCARD`;
+  Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([vcf],{type:'text/vcard'})),download:`${id}.vcf`}).click();
   showToast('📱 Đang tải file danh bạ...');
 }
-
-function copyText(e, text) {
+function copyText(e,text) {
   e.preventDefault();
-  navigator.clipboard.writeText(text).then(() => showToast('✓ Đã sao chép'));
+  navigator.clipboard.writeText(text).then(()=>showToast('✓ Đã sao chép'));
 }
-
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2400);
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2400);
 }
 </script>
 </body>
