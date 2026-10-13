@@ -360,23 +360,33 @@ body {
     const w = window.innerWidth, h = window.innerHeight;
     renderer.setSize(w, h);
     camera.aspect = w / h;
+    // On narrow screens (mobile / tablet portrait), adjust camera distance so left & right flanks stay visible
+    if (camera.aspect < 1.0) {
+      camera.position.z = Math.min(38, 25 / Math.max(camera.aspect, 0.52));
+    } else {
+      camera.position.z = 25;
+    }
     camera.updateProjectionMatrix();
   }
   resize();
   window.addEventListener('resize', resize);
 
   // Lights
-  scene.add(new THREE.AmbientLight(0x202035, 0.7));
-  const coreLight = new THREE.PointLight(0xff3355, 6, 60);
-  coreLight.position.set(7.5, 6.5, -7);
+  scene.add(new THREE.AmbientLight(0x202035, 0.75));
+  const coreLight = new THREE.PointLight(0xff3355, 6, 65);
+  coreLight.position.set(13.0, 6.8, -4);
   scene.add(coreLight);
 
-  const blueLight = new THREE.PointLight(0x2266ff, 4, 55);
-  blueLight.position.set(-10, -5, 4);
-  scene.add(blueLight);
+  const leftLight = new THREE.PointLight(0x6688ff, 5, 60);
+  leftLight.position.set(-13, 2, 6);
+  scene.add(leftLight);
 
-  const sunLight = new THREE.DirectionalLight(0xffeedd, 1.2);
-  sunLight.position.set(6, 14, 10);
+  const redPlanetLight = new THREE.PointLight(0xff2244, 4, 50);
+  redPlanetLight.position.set(12, -4, 6);
+  scene.add(redPlanetLight);
+
+  const sunLight = new THREE.DirectionalLight(0xffeedd, 1.3);
+  sunLight.position.set(0, 18, 12);
   scene.add(sunLight);
 
   // --------------------------------------------------------------
@@ -385,12 +395,12 @@ body {
   const galaxyGroup = new THREE.Group();
   scene.add(galaxyGroup);
 
-  const starCount = 3600;
+  const starCount = 3800;
   const starPos = new Float32Array(starCount * 3);
   const starColors = new Float32Array(starCount * 3);
 
   const branches = 3;
-  const galaxyRadius = 34;
+  const galaxyRadius = 38;
   const spin = 1.3;
 
   const colorInside = new THREE.Color(0xff3355);  // Zebra red cosmic glow
@@ -440,65 +450,66 @@ body {
   galaxyGroup.position.set(0, -2, -6);
 
   // --------------------------------------------------------------
-  // 2. BLACK HOLE (Lỗ đen vũ trụ & Đĩa bồi tụ)
+  // 2. BLACK HOLE (Lỗ đen vũ trụ & Đĩa bồi tụ - Cánh Phải Bên Ngoài Card)
   // --------------------------------------------------------------
   const blackHoleGroup = new THREE.Group();
-  blackHoleGroup.position.set(7.5, 6.5, -9);
+  const bhAnchor = { x: 13.5, y: 7.0, z: -6.0 };
+  blackHoleGroup.position.set(bhAnchor.x, bhAnchor.y, bhAnchor.z);
   scene.add(blackHoleGroup);
 
   const bhSphere = new THREE.Mesh(
-    new THREE.SphereGeometry(2.1, 32, 32),
+    new THREE.SphereGeometry(2.3, 32, 32),
     new THREE.MeshBasicMaterial({ color: 0x000000 })
   );
   blackHoleGroup.add(bhSphere);
 
   const accretionRing1 = new THREE.Mesh(
-    new THREE.RingGeometry(2.25, 3.8, 64),
+    new THREE.RingGeometry(2.45, 4.3, 64),
     new THREE.MeshBasicMaterial({
       color: 0xff3355,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.9,
       blending: THREE.AdditiveBlending
     })
   );
   accretionRing1.rotation.x = Math.PI / 2.3;
-  accretionRing1.rotation.y = Math.PI / 7;
+  accretionRing1.rotation.y = Math.PI / 6;
   blackHoleGroup.add(accretionRing1);
 
   const accretionRing2 = new THREE.Mesh(
-    new THREE.RingGeometry(3.7, 6.0, 64),
+    new THREE.RingGeometry(4.1, 7.0, 64),
     new THREE.MeshBasicMaterial({
       color: 0xff7700,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.5,
       blending: THREE.AdditiveBlending
     })
   );
   accretionRing2.rotation.x = Math.PI / 2.3;
-  accretionRing2.rotation.y = Math.PI / 7;
+  accretionRing2.rotation.y = Math.PI / 6;
   blackHoleGroup.add(accretionRing2);
 
-  const bhParticleCount = 380;
+  const bhParticleCount = 420;
   const bhPos = new Float32Array(bhParticleCount * 3);
   const bhCol = new Float32Array(bhParticleCount * 3);
   const bhOrbits = [];
   for (let i = 0; i < bhParticleCount; i++) {
-    const orbitR = 2.3 + Math.random() * 3.4;
+    const orbitR = 2.5 + Math.random() * 4.2;
     const angle = Math.random() * Math.PI * 2;
     const speed = (0.025 + Math.random() * 0.02) * (3.0 / orbitR);
     bhOrbits.push({ r: orbitR, angle, speed, yOffset: (Math.random() - 0.5) * 0.25 });
     const c = Math.random();
     bhCol[i * 3]     = 1.0;
-    bhCol[i * 3 + 1] = c > 0.6 ? 0.8 : 0.2;
+    bhCol[i * 3 + 1] = c > 0.6 ? 0.85 : 0.2;
     bhCol[i * 3 + 2] = c > 0.85 ? 0.9 : 0.05;
   }
   const bhPGeo = new THREE.BufferGeometry();
   bhPGeo.setAttribute('position', new THREE.BufferAttribute(bhPos, 3));
   bhPGeo.setAttribute('color', new THREE.BufferAttribute(bhCol, 3));
   const bhPoints = new THREE.Points(bhPGeo, new THREE.PointsMaterial({
-    size: 0.18,
+    size: 0.2,
     vertexColors: true,
     transparent: true,
     opacity: 0.9,
@@ -507,7 +518,7 @@ body {
   blackHoleGroup.add(bhPoints);
 
   // --------------------------------------------------------------
-  // 3. PLANETS & MOONS (Hành tinh & Vệ tinh)
+  // 3. PLANETS & MOONS (Hành tinh & Vệ tinh - Cánh Trái, Cánh Phải & Phía Trên)
   // --------------------------------------------------------------
   const planets = [];
 
@@ -517,10 +528,10 @@ body {
 
     const bodyMat = new THREE.MeshStandardMaterial({
       color: config.color,
-      metalness: config.metalness || 0.4,
-      roughness: config.roughness || 0.4,
+      metalness: config.metalness || 0.45,
+      roughness: config.roughness || 0.35,
       emissive: config.emissive || 0x000000,
-      emissiveIntensity: 0.25
+      emissiveIntensity: 0.3
     });
     const body = new THREE.Mesh(new THREE.SphereGeometry(config.radius, 32, 32), bodyMat);
     pGroup.add(body);
@@ -531,22 +542,23 @@ body {
         color: config.ringColor || config.color,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: config.ringOpacity || 0.75,
-        roughness: 0.5
+        opacity: config.ringOpacity || 0.85,
+        roughness: 0.45
       });
       const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-      ringMesh.rotation.x = config.ringRotX || (Math.PI / 2.4);
+      ringMesh.rotation.x = config.ringRotX || (Math.PI / 2.3);
+      ringMesh.rotation.y = config.ringRotY || (Math.PI / 7);
       pGroup.add(ringMesh);
     }
 
     let moonMesh = null;
     let moonOrbit = null;
     if (config.hasMoon) {
-      const moonGeo = new THREE.SphereGeometry(config.moonRadius || 0.25, 16, 16);
-      const moonMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.7 });
+      const moonGeo = new THREE.SphereGeometry(config.moonRadius || 0.28, 16, 16);
+      const moonMat = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.6 });
       moonMesh = new THREE.Mesh(moonGeo, moonMat);
       pGroup.add(moonMesh);
-      moonOrbit = { dist: config.moonDist || 2.4, angle: 0, speed: 0.03 };
+      moonOrbit = { dist: config.moonDist || 2.4, angle: Math.random() * Math.PI * 2, speed: 0.03 };
     }
 
     scene.add(pGroup);
@@ -555,81 +567,117 @@ body {
       group: pGroup,
       body,
       rotY: config.rotY || 0.008,
-      orbitR: Math.sqrt(config.x * config.x + config.y * config.y),
-      orbitAngle: Math.atan2(config.y, config.x),
-      orbitSpeed: config.orbitSpeed || 0.001,
+      anchorX: config.x,
+      anchorY: config.y,
+      anchorZ: config.z,
+      floatAmpX: config.floatAmpX || 1.2,
+      floatAmpY: config.floatAmpY || 1.0,
+      floatSpeed: config.floatSpeed || 0.006,
+      floatAngle: Math.random() * Math.PI * 2,
+      phase: Math.random() * Math.PI * 2,
       moonMesh,
       moonOrbit
     });
   }
 
-  // Planet 1: Saturn-like (Vành đai khí khổng lồ - Tím Ánh Bạc)
+  // --- CÁNH TRÁI (LEFT FLANK - Toàn bộ nằm bên ngoài lề trái bảng thông tin) ---
+  // Planet 1: Saturn-like (Sao Thổ khổng lồ với vành đai rực rỡ và mặt trăng quay quanh)
   createPlanet({
-    x: -9.5, y: -4.5, z: 2.0,
-    radius: 1.5,
+    x: -14.2, y: -2.0, z: 2.5,
+    radius: 1.85,
     color: 0x5a4d8c,
-    metalness: 0.6,
+    metalness: 0.65,
     roughness: 0.35,
     hasRing: true,
-    ringInner: 2.0,
-    ringOuter: 3.5,
-    ringColor: 0xa899e6,
-    ringOpacity: 0.8,
+    ringInner: 2.3,
+    ringOuter: 4.4,
+    ringColor: 0xb5a6f2,
+    ringOpacity: 0.85,
     hasMoon: true,
-    moonRadius: 0.26,
-    moonDist: 4.0,
-    orbitSpeed: 0.0008
+    moonRadius: 0.3,
+    moonDist: 4.8,
+    floatAmpX: 1.3,
+    floatAmpY: 1.2,
+    floatSpeed: 0.007
   });
 
-  // Planet 2: Crimson Zebra Planet (Sao Hỏa / Hành tinh Đỏ Zebra)
+  // Planet 2: Cyan Ice Giant (Hành tinh băng Uranus - Góc trên bên trái)
   createPlanet({
-    x: 8.5, y: -5.5, z: 4.5,
-    radius: 1.25,
-    color: 0xe31837,
-    emissive: 0x550008,
-    metalness: 0.5,
-    roughness: 0.3,
-    hasRing: false,
-    hasMoon: true,
-    moonRadius: 0.22,
-    moonDist: 2.2,
-    orbitSpeed: 0.0012
-  });
-
-  // Planet 3: Cyan Ice Giant (Hành tinh băng ngọc Uranus)
-  createPlanet({
-    x: -7.5, y: 7.2, z: -4.0,
-    radius: 1.35,
+    x: -13.2, y: 7.2, z: -2.0,
+    radius: 1.5,
     color: 0x00b4d8,
-    emissive: 0x002233,
+    emissive: 0x002238,
     metalness: 0.7,
     roughness: 0.2,
     hasRing: true,
-    ringInner: 1.7,
-    ringOuter: 2.3,
+    ringInner: 1.9,
+    ringOuter: 2.6,
     ringColor: 0x90e0ef,
-    ringOpacity: 0.6,
-    orbitSpeed: 0.0006
+    ringOpacity: 0.7,
+    floatAmpX: 1.1,
+    floatAmpY: 0.9,
+    floatSpeed: 0.005
   });
 
-  // Planet 4: Golden Exoplanet (Hành tinh cát vàng sa mạc)
+  // Planet 3: Emerald Exoplanet (Hành tinh ngọc lục bảo - Góc dưới bên trái)
   createPlanet({
-    x: 9.8, y: 8.5, z: -14.0,
-    radius: 1.7,
-    color: 0xf4a261,
-    metalness: 0.4,
-    roughness: 0.5,
-    orbitSpeed: 0.0005
-  });
-
-  // Planet 5: Emerald Exo-world (Hành tinh ngọc lục bảo)
-  createPlanet({
-    x: -2.0, y: -10.5, z: 1.0,
-    radius: 0.85,
+    x: -14.5, y: -8.8, z: -1.0,
+    radius: 1.2,
     color: 0x2ec4b6,
     metalness: 0.8,
     roughness: 0.2,
-    orbitSpeed: 0.0015
+    floatAmpX: 1.0,
+    floatAmpY: 1.1,
+    floatSpeed: 0.008
+  });
+
+  // --- CÁNH PHẢI (RIGHT FLANK - Toàn bộ nằm bên ngoài lề phải bảng thông tin) ---
+  // Planet 4: Crimson Zebra Planet (Sao Hỏa / Hành tinh Đỏ Zebra rực sáng)
+  createPlanet({
+    x: 13.2, y: -4.8, z: 4.0,
+    radius: 1.55,
+    color: 0xe31837,
+    emissive: 0x66000c,
+    metalness: 0.55,
+    roughness: 0.3,
+    hasRing: false,
+    hasMoon: true,
+    moonRadius: 0.28,
+    moonDist: 2.6,
+    floatAmpX: 1.2,
+    floatAmpY: 1.1,
+    floatSpeed: 0.009
+  });
+
+  // Planet 5: Golden Desert Exoplanet (Hành tinh vàng sa mạc - Giữa bên phải)
+  createPlanet({
+    x: 15.8, y: 1.5, z: -7.0,
+    radius: 1.7,
+    color: 0xf4a261,
+    metalness: 0.45,
+    roughness: 0.45,
+    floatAmpX: 1.4,
+    floatAmpY: 1.0,
+    floatSpeed: 0.006
+  });
+
+  // --- ĐỈNH CAO (TOP APEX - Phía trên đầu bảng thông tin) ---
+  // Planet 6: Amethyst Mystic Planet (Hành tinh tím huyền bí nổi bật trên đỉnh thẻ)
+  createPlanet({
+    x: 0.0, y: 13.0, z: 1.0,
+    radius: 1.25,
+    color: 0x7209b7,
+    emissive: 0x240046,
+    metalness: 0.7,
+    roughness: 0.25,
+    hasRing: true,
+    ringInner: 1.5,
+    ringOuter: 2.2,
+    ringColor: 0xb5179e,
+    ringOpacity: 0.75,
+    floatAmpX: 1.6,
+    floatAmpY: 0.8,
+    floatSpeed: 0.006
   });
 
   // --------------------------------------------------------------
@@ -695,7 +743,9 @@ body {
     // Galaxy rotation
     galaxyGroup.rotation.y += 0.0009;
 
-    // Black Hole accretion spin
+    // Black Hole gentle floating & spinning
+    blackHoleGroup.position.x = bhAnchor.x + Math.sin(t * 0.4) * 0.7;
+    blackHoleGroup.position.y = bhAnchor.y + Math.cos(t * 0.5) * 0.5;
     accretionRing1.rotation.z += 0.012;
     accretionRing2.rotation.z -= 0.008;
     blackHoleGroup.rotation.y = Math.sin(t * 0.3) * 0.15;
@@ -711,23 +761,26 @@ body {
     }
     bhPGeo.attributes.position.needsUpdate = true;
 
-    // Planets orbit & self-rotation
+    // Planets: float gracefully in designated open zones without crossing behind the card
     planets.forEach(p => {
       p.body.rotation.y += p.rotY;
-      p.orbitAngle += p.orbitSpeed;
-      p.group.position.x = Math.cos(p.orbitAngle) * p.orbitR;
-      p.group.position.y = Math.sin(p.orbitAngle) * p.orbitR + Math.sin(t * 0.6 + p.orbitR) * 0.35;
+      p.floatAngle += p.floatSpeed;
+      p.group.position.x = p.anchorX + Math.sin(p.floatAngle) * p.floatAmpX;
+      p.group.position.y = p.anchorY + Math.cos(p.floatAngle * 0.85) * p.floatAmpY + Math.sin(t * 0.5 + p.phase) * 0.3;
+      p.group.position.z = p.anchorZ + Math.sin(p.floatAngle * 0.6) * 0.5;
 
       if (p.moonMesh && p.moonOrbit) {
         p.moonOrbit.angle += p.moonOrbit.speed;
         p.moonMesh.position.x = Math.cos(p.moonOrbit.angle) * p.moonOrbit.dist;
         p.moonMesh.position.z = Math.sin(p.moonOrbit.angle) * p.moonOrbit.dist;
+        p.moonMesh.position.y = Math.sin(p.moonOrbit.angle * 1.5) * 0.25;
       }
     });
 
-    // Animate core light
-    coreLight.position.x = blackHoleGroup.position.x + Math.sin(t * 1.5) * 1.5;
-    coreLight.position.y = blackHoleGroup.position.y + Math.cos(t * 1.5) * 1.5;
+    // Core light tracks Black Hole
+    coreLight.position.x = blackHoleGroup.position.x;
+    coreLight.position.y = blackHoleGroup.position.y;
+    coreLight.position.z = blackHoleGroup.position.z + 2.0;
 
     // Meteors
     meteors.forEach(m => {
